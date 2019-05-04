@@ -1,0 +1,41 @@
+StoredFile
+    name Text
+    contentType Text
+    content ByteString
+    internal Bool default = True
+    published Bool default = True
+    created UTCTime "default=now()"
+
+Person json
+    name String
+    address String Maybe
+    companyId CompanyId Maybe
+
+Company json
+    name Text 
+    url Text
+    ticker Text
+    status Bool default = True
+    UniqueTicker ticker status
+    deriving Show Read 
+
+TimeSeries json
+    tsid CompanyId
+    refdate UTCTime
+    UniqueTS tsid refdate
+    close Double
+    adjclose Double
+    volume Double
+    deriving Show Read
+    
+Story json
+    hashId Int
+    title Text
+    UniqueTitle title
+    link Text
+    content Text Maybe
+    image Text Maybe
+    created UTCTime "default=now()"
+    deriving Eq Show 
+    
+    
