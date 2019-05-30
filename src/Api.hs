@@ -44,15 +44,32 @@ personApi = addPerson
        :<|> getPersons
        :<|> getPersonCompanies
 
+-- Story
+type StoryAPI = AddStory
+         :<|> UpdateStory
+         :<|> GetStories
+         :<|> GetStory
+--         :<|> DeleteStory
+
+storyApi :: ServerT StoryAPI AppM
+storyApi = addStory
+    :<|> updateStory
+    :<|> getStories
+    :<|> getStory
+--    :<|> deleteStory
+
 -- Combined
 type CombinedAPI = CompanyAPI
              :<|> PersonAPI
+             :<|> StoryAPI
              :<|> WithHeader
              :<|> ReturnHeader
              :<|> CaseError
 
 server :: ServerT CombinedAPI AppM
-server = companyApi :<|> personApi
+server = companyApi 
+    :<|> personApi
+    :<|> storyApi
     :<|> withHeader
     :<|> responseHeader
     :<|> caseError

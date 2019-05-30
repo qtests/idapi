@@ -119,6 +119,47 @@ getPersons = runDb $ do
   list <- selectList [] [Asc PersonId]
   return $ map fromEntity list
 
+-- Story
+type AddStory =  "story" :> "add"
+                :> ReqBody '[JSON] StoryModel
+                :> Post '[PlainText] String
+
+addStory :: StoryModel -> AppM String
+addStory model = do
+  key <- runDb $ insert $ toEntity  model
+  return $ show (fromSqlKey key)
+
+type UpdateStory =    "story" :> "update"
+                    :> Capture "id" Int64
+                    :> ReqBody '[JSON] StoryModel
+                    :> Post '[PlainText] NoContent
+
+updateStory :: Int64 -> StoryModel -> AppM NoContent
+updateStory i model = do
+  runDb $ update (toSqlKey i) (toUpdate model)
+  return NoContent
+
+
+type GetStory =  "story" :> "get"
+               :> Capture "id" Int64
+               :> Get '[JSON] StoryModel
+
+getStory :: Int64 -> AppM StoryModel
+getStory i = do
+  entity <- runDb $ selectFirst [StoryId <-. [toSqlKey i :: Key Story]] []
+  case entity of
+        (Just x) -> return $ fromEntity x
+        Nothing  -> throwError err404  { errBody = "Story not found" }
+
+
+type GetStories = "story"  :> "list" :> Get '[JSON] [StoryModel]
+
+getStories :: AppM [StoryModel]
+getStories = runDb $ do
+  list <- selectList [] [Asc StoryId]
+  return $ map fromEntity list
+
+-- End Story
 
 
 type CaseError = "get1" :> Capture "str" String :> Get '[PlainText] String
